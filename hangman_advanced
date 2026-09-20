@@ -1,30 +1,20 @@
 import nltk
 import random 
-import requests 
+import requests
 
 nltk.download("words", quiet=True)
 from nltk.corpus import words
-hords = [word for word in words.words() if len(word) >9 ] 
-chosen_hord = random.choice(hords)
+english_words = set(words.words('en'))
+hords = [english_word for english_word in english_words if len(english_word) >= 9]
+chosen_hord = random.choice(hords).lower()
 correct_letter = []
 guessed_letters = []
 wrong_guesses = 0
 
-
-def get_word_definition(word):
-	word_definition = requests.get(f"https://api.dictionaryapi.dev/api/v2/entries/en/{word}")
-	if word_definition.status_code != 200:
-		return None
-	try:
-		return word_definition.json()[0]['meanings'][0]['definitions'][0]['definition']
-	except (IndexError, KeyError, TypeError, ValueError):
-		return None
-
-
 display_word = "_" * len(chosen_hord)
 print("Let's play hangman! Guess a letter: [" + display_word + "]")
 
-while display_word != chosen_hord and wrong_guesses < 10:
+while display_word != chosen_hord and wrong_guesses < 7:
 	user_guess = input("Guess a letter >> ").strip().lower()
 
 	if len(user_guess) != 1 or not user_guess.isalpha():
@@ -40,10 +30,7 @@ while display_word != chosen_hord and wrong_guesses < 10:
 		print("Correct!")
 	else:
 		wrong_guesses += 1
-		print("Wrong! Misses left: " + str(10 - wrong_guesses))
-		definition = get_word_definition(chosen_hord)
-		if definition:
-			print(f"Definition: {definition}")
+		print("Wrong! Misses left: " + str(7 - wrong_guesses))
 
 	display_word = "".join(
 		letter if letter in correct_letter else "_" for letter in chosen_hord
@@ -54,6 +41,4 @@ if display_word == chosen_hord:
 	print("You win!")
 else:
 	print("You lose. The word was " + chosen_hord + ".")
-	definition = get_word_definition(chosen_hord)
-	if definition:
-		print(f"Definition: {definition}")
+ 
