@@ -6,7 +6,7 @@ nltk.download("words", quiet=True)
 from nltk.corpus import words
 english_words = set(words.words('en'))
 hords = [english_word for english_word in english_words if 6 <= len(english_word) <= 8]
-chosen_hord = random.choice(hords).lower()
+chosen_hord = random.choice(hords).lower().isalpha()
 correct_letter = []
 guessed_letters = []
 wrong_guesses = 0
