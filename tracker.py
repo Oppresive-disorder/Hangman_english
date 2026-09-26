@@ -6,6 +6,7 @@ level1 = False
 level2 = False  
 level3 = False 
 level4 = False 
+
 wrong_guesses = 0 
 max_guesses = 6
 
