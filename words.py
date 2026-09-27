@@ -1,3 +1,4 @@
+import random
 import nltk
 import requests
 from nltk.corpus import wordnet, words
@@ -11,6 +12,17 @@ easy_words = [w for w in english_hord if 2 <= len(w) <= 5]
 medium_words = [w for w in english_hord if 6 <= len(w) <= 7]
 hard_words = [w for w in english_hord if 8 <=len(w) <= 12]
 expert_words = [w for w in english_hord if len(w) >= 13]
+
+def get_random_word(difficulty_level):
+    if difficulty_level == 1:
+        return random.choice(easy_words)
+    elif difficulty_level == 2:
+        return random.choice(medium_words)
+    elif difficulty_level == 3:
+        return random.choice(hard_words)
+    else:
+        return random.choice(expert_words)
+
 
 def fetch_from_free_dictionary(word):
     url = f"https://api.dictionaryapi.dev/api/v2/entries/en/{word}"
