@@ -3,10 +3,13 @@ from tracker import (
     get_display_word,
     is_max_guesses_reached,
     is_word_complete,
+    reset_round,
+    set_level,
     update_streak,
 )
 import tracker
 from words import get_definition, get_random_word
+
 
 
 def word_grab(level_num):
@@ -14,7 +17,8 @@ def word_grab(level_num):
     definition = get_definition(word)
     return word, definition
 
-def core_gameplayloop(word, definition):
+
+def core_gameplayloop(word, definition): 
     guessed_letters = []
 
     print(f"Let's play hangman! [{get_display_word(word, guessed_letters)}]")
@@ -39,23 +43,12 @@ def core_gameplayloop(word, definition):
 
         print(f"[{get_display_word(word, guessed_letters)}]")
 
+   
     won = is_word_complete(word, guessed_letters)
     update_streak(won)
 
     print("\nYou win!" if won else f"\nYou lose! The word was {word}.")
-    print("---------<-->----<-->----<-->----------")
+    print("---------------------------------")
     print("Definition:", definition) 
     print(f"Streak: {tracker.streak} | Moni: ${tracker.moni}")
-
-    if __name__ == "__main__":
- 
-    level_num = 1
-
-
-    set_level(level_num)
-    reset_round()
-
-    word, definition = word_grab(level_num)
-
-    core_gameplayloop(word, definition)
-        
+  
