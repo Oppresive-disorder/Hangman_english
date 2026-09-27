@@ -51,4 +51,14 @@ def core_gameplayloop(word, definition):
     print("---------------------------------")
     print("Definition:", definition) 
     print(f"Streak: {tracker.streak} | Moni: ${tracker.moni}")
-  
+
+
+if __name__ == "__main__":
+    level_num = 1  
+
+
+    set_level(level_num)
+    reset_round()
+
+    word, definition = word_grab(level_num)
+    core_gameplayloop(word, definition) 
