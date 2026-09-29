@@ -5,8 +5,8 @@ import requests
 nltk.download("words", quiet=True)
 from nltk.corpus import words
 english_words = set(words.words('en'))
-hords = [english_word for english_word in english_words if len(english_word) >= 9]
-chosen_hord = random.choice(hords).lower()
+hords = [english_word for english_word in english_words if 9>= len(english_word) >= 12]
+chosen_hord = random.choice(hords).lower().isalpha()
 correct_letter = []
 guessed_letters = []
 wrong_guesses = 0

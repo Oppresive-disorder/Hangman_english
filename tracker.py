@@ -2,16 +2,16 @@ streak = 0
 moni = 0
 highest_streak = 0
 
-level1 = False 
-level2 = False  
-level3 = False 
-level4 = False 
+level1 = False
+level2 = False
+level3 = False
+level4 = False
 
-wrong_guesses = 0 
+wrong_guesses = 0
 max_guesses = 6
 
+
 def get_display_word(chosen_word, guessed_letters):
-  
     display_list = []
     for letter in chosen_word:
         if letter in guessed_letters:
@@ -21,12 +21,13 @@ def get_display_word(chosen_word, guessed_letters):
 
     return " ".join(display_list)
 
+
 def is_word_complete(chosen_word, guessed_letters):
     for letter in chosen_word:
         if letter not in guessed_letters:
-            return False  
+            return False
     return True
-    
+
 
 def set_level(level_num):
     global level1, level2, level3, level4, max_guesses
@@ -45,6 +46,9 @@ def set_level(level_num):
     elif level4:
         max_guesses = 8
 
+    reset_round()
+
+
 def add_wrong_guess():
     global wrong_guesses
     wrong_guesses += 1
@@ -56,7 +60,8 @@ def is_max_guesses_reached():
 
 def reset_round():
     global wrong_guesses
-    wrong_guesses = 0        
+    wrong_guesses = 0
+
 
 def update_streak(Correct):
     global streak, moni, highest_streak
@@ -64,7 +69,7 @@ def update_streak(Correct):
     if Correct:
         streak += 1
         if streak > highest_streak:
-                    highest_streak = streak
+            highest_streak = streak
 
         if level1:
             moni += 1
@@ -73,7 +78,6 @@ def update_streak(Correct):
         elif level3:
             moni += 5
         elif level4:
-             moni += 7
-     
+            moni += 7
     else:
         streak = 0

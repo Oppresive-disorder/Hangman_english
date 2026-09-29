@@ -6,7 +6,7 @@ nltk.download("words", quiet=True)
 from nltk.corpus import words
 english_words = set(words.words('en'))
 hords = [english_word for english_word in english_words if 1 <= len(english_word) <= 5]
-chosen_hord = random.choice(hords).lower()
+chosen_hord = random.choice(hords).lower().isalpha()
 correct_letter = []
 guessed_letters = []
 wrong_guesses = 0
@@ -14,7 +14,7 @@ wrong_guesses = 0
 display_word = "_" * len(chosen_hord)
 print("Let's play hangman! Guess a letter: [" + display_word + "]")
 
-while display_word != chosen_hord and wrong_guesses < 2:
+while display_word != chosen_hord and wrong_guesses < 5:
 	user_guess = input("Guess a letter >> ").strip().lower()
 
 	if len(user_guess) != 1 or not user_guess.isalpha():
@@ -30,7 +30,7 @@ while display_word != chosen_hord and wrong_guesses < 2:
 		print("Correct!")
 	else:
 		wrong_guesses += 1
-		print("Wrong! Misses left: " + str(2 - wrong_guesses))
+		print("Wrong! Misses left: " + str(5 - wrong_guesses))
 
 	display_word = "".join(
 		letter if letter in correct_letter else "_" for letter in chosen_hord
