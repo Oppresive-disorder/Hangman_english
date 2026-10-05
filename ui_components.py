@@ -1,3 +1,5 @@
+from turtle import color
+
 import pygame 
 import Hangman_monolith
 
@@ -14,5 +16,9 @@ while running:
     for event in pygame.event.get():
         if event == pygame.QUIT:
             running = False
+pygame.quit()            
 
-screen.fill("MONI")
+pastel_cream = (255, 253, 208)
+while True:
+    screen.fill(pastel_cream)
+    pygame.display.flip() 
