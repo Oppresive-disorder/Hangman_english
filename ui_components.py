@@ -1,18 +1,18 @@
 import pygame 
 import Hangman_monolith
+import Game_interface
 
-pygame.init()
-
-screen = pygame.display.set_mode((1280,720))
+screen = pygame.display.set_mode((1250, 720))
 pygame.display.set_caption("Start Moni")
 
 clock = pygame.time.Clock()
-running = True 
 
+running = True
 while running:
-
     for event in pygame.event.get():
-        if event == pygame.QUIT:
+        if event.type == pygame.QUIT:
             running = False
 
-screen.fill("MONI")
+    screen.fill((234, 218, 171))
+    pygame.display.flip()
+    clock.tick(60)
