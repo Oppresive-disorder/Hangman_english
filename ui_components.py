@@ -1,7 +1,6 @@
-import pygame 
-import Hangman_monolith
-import Game_interface
+import pygame
 
+pygame.init()
 screen = pygame.display.set_mode((1250, 720))
 pygame.display.set_caption(" Hang Moni ")
 
@@ -17,8 +16,7 @@ while running:
     pygame.display.flip()
     clock.tick(60)
 
-    game_interface = Game_interface.GameInterface(screen)
-    Hangman_monolith = Hangman_monolith.HangmanMonolith(screen, game_interface)
+pygame.quit()
 
 
 
