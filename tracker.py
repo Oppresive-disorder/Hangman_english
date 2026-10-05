@@ -38,13 +38,13 @@ def set_level(level_num):
     level4 = level_num == 4
 
     if level1:
-        max_guesses = 5
-    elif level2:
-        max_guesses = 6
-    elif level3:
         max_guesses = 7
-    elif level4:
+    elif level2:
         max_guesses = 8
+    elif level3:
+        max_guesses = 9
+    elif level4:
+        max_guesses = 10
 
     reset_round()
 
