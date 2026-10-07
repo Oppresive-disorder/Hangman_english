@@ -13,11 +13,6 @@ pygame.init()
 pygame.font.init()
 screen = pygame.display.set_mode((1250, 720))
 pygame.display.set_caption(" Hang Moni ")
-icon_path = os.path.join(
-    os.path.dirname(__file__), "Screenshot 2026-09-16 173433.png"
-)
-icon = pygame.image.load(icon_path).convert_alpha()
-pygame.display.set_icon(icon)
 CG_font = pygame.font.SysFont("Cormorant Garamond", 49)
 CG_font_small = pygame.font.SysFont("Cormorant Garamond", 30)
 pixel_font_path = os.path.join(os.path.dirname(__file__), "PixelifySans.ttf")
