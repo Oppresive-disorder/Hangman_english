@@ -72,12 +72,12 @@ def update_streak(Correct):
             highest_streak = streak
 
         if level1:
-            moni += 1
-        elif level2:
             moni += 3
-        elif level3:
+        elif level2:
             moni += 5
+        elif level3:
+            moni += 6
         elif level4:
-            moni += 7
+            moni += 8
     else:
         streak = 0

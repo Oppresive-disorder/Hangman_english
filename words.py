@@ -48,7 +48,7 @@ def fetch_from_wordnet_local(word):
     synsets = wordnet.synsets(word)
     if synsets:
         return synsets[0].definition()
-    return "A worddddd!"
+    return ("definition not found")
 
 
 def get_definition(word):

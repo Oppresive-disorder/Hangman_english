@@ -304,6 +304,7 @@ while running:
 
 
     if current_screen == "menu":
+        moni_box.draw(screen, tracker.moni)
         for button, color, label in buttons:
             pygame.draw.rect(screen, color, button)
             screen.blit(label, label.get_rect(center=button.center))
@@ -340,7 +341,7 @@ while running:
             result_text = CG_font_small.render(round_result, True, cp.spiced_wine)
             screen.blit(result_text, result_text.get_rect(center=(930, 530)))
             restart_text = CG_font_small.render(
-                "Press R to play again", True, cp.spiced_wine
+                "Press R to continue", True, cp.spiced_wine
             )
             screen.blit(restart_text, restart_text.get_rect(center=(930, 580)))
         else:
