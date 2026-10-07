@@ -11,10 +11,7 @@ english_hord = [w.lower() for w in set(words.words("en")) if w.isalpha()]
 easy_words = [w for w in english_hord if 2 <= len(w) <= 5]
 medium_words = [w for w in english_hord if 6 <= len(w) <= 7]
 hard_words = [w for w in english_hord if 8 <= len(w) <= 12]
-expert_words = [w for w in english_hord if len(w) >= 13]
-
-def banned_words():
-    
+expert_words = [w for w in english_hord if len(w) >= 13]    
 
 def get_random_word(difficulty_level):
     if difficulty_level == 1:
