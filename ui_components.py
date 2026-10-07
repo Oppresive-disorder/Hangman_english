@@ -233,6 +233,7 @@ game_definition = ""
 guessed_letters = set()
 game_over = False
 round_result = ""
+guess_message = ""
 
 
 clock = pygame.time.Clock()
@@ -268,6 +269,7 @@ while running:
                 guessed_letters.clear()
                 game_over = False
                 round_result = ""
+                guess_message = ""
             elif current_screen == "game" and home_button.rect.collidepoint(event.pos):
                 current_screen = "menu"
         elif current_screen == "game" and event.type == pygame.KEYDOWN:
@@ -278,9 +280,13 @@ while running:
                 guessed_letters.clear()
                 game_over = False
                 round_result = ""
+                guess_message = ""
             elif not game_over and len(event.unicode) == 1 and event.unicode.isalpha():
                 letter = event.unicode.lower()
-                if letter not in guessed_letters:
+                if letter in guessed_letters:
+                    guess_message = f"Already guessed {letter}"
+                else:
+                    guess_message = ""
                     guessed_letters.add(letter)
                     if letter not in game_word:
                         tracker.add_wrong_guess()
@@ -319,11 +325,12 @@ while running:
         face_rect = moni_face.draw(
             screen, tracker.wrong_guesses, tracker.max_guesses
         )
-        bubble_text = (
-            f"Definition: {game_definition}"
-            if game_over
-            else "Keep going!"
-        )
+        if game_over:
+            bubble_text = f"Definition: {game_definition}"
+        elif guess_message:
+            bubble_text = guess_message
+        else:
+            bubble_text = "Keep going!"
         moni_speech_bubble.draw(screen, bubble_text, face_rect)
         moni_box.draw(screen, tracker.moni)
         streak_box.draw(screen, tracker.streak)
