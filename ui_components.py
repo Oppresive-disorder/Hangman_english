@@ -451,7 +451,9 @@ while running:
             elif current_screen == "game" and home_button.rect.collidepoint(event.pos):
                 current_screen = "menu"
         elif current_screen == "game" and event.type == pygame.KEYDOWN:
-            if game_over and event.key == pygame.K_r:
+            if event.key == pygame.K_ESCAPE:
+                current_screen = "menu"
+            elif game_over and event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
                 tracker.reset_round()
                 game_word = get_random_word(current_level).lower()
                 game_definition = ""
