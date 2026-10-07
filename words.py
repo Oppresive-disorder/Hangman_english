@@ -1,32 +1,31 @@
 import random
-import nltk
 import requests
-from nltk.corpus import wordnet, words
-
-nltk.download("wordnet", quiet=True)
-nltk.download("words", quiet=True)
+from functools import lru_cache
 
 
-def is_wordnet_lemma(word):
-    normalized_word = word.lower()
-    return any(
-        lemma.name().lower() == normalized_word
-        for synset in wordnet.synsets(normalized_word)
-        for lemma in synset.lemmas()
+@lru_cache(maxsize=1)
+def _get_word_lists():
+    import nltk
+    from nltk.corpus import wordnet, words
+
+    nltk.download("wordnet", quiet=True)
+    nltk.download("words", quiet=True)
+
+    wordnet_lemmas = {lemma.lower() for lemma in wordnet.all_lemma_names()}
+    english_words = {
+        word.lower()
+        for word in words.words("en")
+        if word.isalpha() and word.lower() in wordnet_lemmas
+    }
+    return (
+        [word for word in english_words if 2 <= len(word) <= 5],
+        [word for word in english_words if 6 <= len(word) <= 7],
+        [word for word in english_words if 8 <= len(word) <= 12],
+        [word for word in english_words if len(word) >= 13],
     )
 
-
-english_hord = [
-    word.lower()
-    for word in set(words.words("en"))
-    if word.isalpha() and is_wordnet_lemma(word)
-]
-easy_words = [w for w in english_hord if 2 <= len(w) <= 5]
-medium_words = [w for w in english_hord if 6 <= len(w) <= 7]
-hard_words = [w for w in english_hord if 8 <= len(w) <= 12]
-expert_words = [w for w in english_hord if len(w) >= 13]    
-
 def get_random_word(difficulty_level):
+    easy_words, medium_words, hard_words, expert_words = _get_word_lists()
     if difficulty_level == 1:
         return random.choice(easy_words)
     elif difficulty_level == 2:
@@ -57,6 +56,8 @@ def fetch_from_datamuse(word):
 
 
 def fetch_from_wordnet_local(word):
+    from nltk.corpus import wordnet
+
     synsets = wordnet.synsets(word)
     if synsets:
         return synsets[0].definition()

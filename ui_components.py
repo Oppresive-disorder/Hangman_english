@@ -568,7 +568,7 @@ while running:
             result_text = CG_font_small.render(round_result, True, cp.spiced_wine)
             screen.blit(result_text, result_text.get_rect(center=(930, 530)))
             restart_text = CG_font_small.render(
-                "Press R to continue", True, cp.spiced_wine
+                "Enter to Continue" to continue", True, cp.spiced_wine
             )
             screen.blit(restart_text, restart_text.get_rect(center=(930, 580)))
         else:
