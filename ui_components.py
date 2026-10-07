@@ -13,6 +13,11 @@ pygame.init()
 pygame.font.init()
 screen = pygame.display.set_mode((1250, 720))
 pygame.display.set_caption(" Hang Moni ")
+icon_path = os.path.join(
+    os.path.dirname(__file__), "Screenshot 2026-09-16 173433.png"
+)
+icon = pygame.image.load(icon_path).convert_alpha()
+pygame.display.set_icon(icon)
 CG_font = pygame.font.SysFont("Cormorant Garamond", 49)
 CG_font_small = pygame.font.SysFont("Cormorant Garamond", 30)
 pixel_font_path = os.path.join(os.path.dirname(__file__), "PixelifySans.ttf")
@@ -395,7 +400,8 @@ home_button = Home_Button(30, 30)
 game_platform = platform(0, 45, 675, 675)
 moni_face = Moni_face(535, 110)
 moni_speech_bubble = speech_bubble(0, 0, 300, 140)
-definition_executor = ThreadPoolExecutor(max_workers=2)
+definition_executor = ThreadPoolExecutor(max_workers=1)
+word_future: Future[str] | None = None
 definition_future: Future[str] | None = None
 current_screen = "menu"
 current_level = None
@@ -436,18 +442,16 @@ while running:
             )
             if level_selection is not None and current_screen == "menu":
                 _, current_level = level_selection
-                current_screen = "game"
                 tracker.set_level(current_level)
-                game_word = get_random_word(current_level).lower()
-                game_definition = ""
-                definition_error = ""
-                definition_future = definition_executor.submit(
-                    get_definition, game_word
-                )
+                current_screen = "game"
+                game_word = ""
                 guessed_letters.clear()
                 game_over = False
                 round_result = ""
                 guess_message = ""
+                word_future = definition_executor.submit(
+                    get_random_word, current_level
+                )
             elif current_screen == "game" and home_button.rect.collidepoint(event.pos):
                 current_screen = "menu"
         elif current_screen == "game" and event.type == pygame.KEYDOWN:
@@ -455,17 +459,22 @@ while running:
                 current_screen = "menu"
             elif game_over and event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
                 tracker.reset_round()
-                game_word = get_random_word(current_level).lower()
+                game_word = ""
                 game_definition = ""
                 definition_error = ""
-                definition_future = definition_executor.submit(
-                    get_definition, game_word
-                )
                 guessed_letters.clear()
                 game_over = False
                 round_result = ""
                 guess_message = ""
-            elif not game_over and len(event.unicode) == 1 and event.unicode.isalpha():
+                word_future = definition_executor.submit(
+                    get_random_word, current_level
+                )
+            elif (
+                word_future is None
+                and not game_over
+                and len(event.unicode) == 1
+                and event.unicode.isalpha()
+            ):
                 letter = event.unicode.lower()
                 if letter in guessed_letters:
                     guess_message = f"Already guessed {letter}"
@@ -486,6 +495,17 @@ while running:
 
     if not running:
         break
+
+    if word_future is not None and word_future.done():
+        selected_word = word_future.result().lower()
+        word_future = None
+        if current_screen == "game":
+            game_word = selected_word
+            game_definition = ""
+            definition_error = ""
+            definition_future = definition_executor.submit(
+                get_definition, game_word
+            )
 
     if definition_future is not None and definition_future.done():
         try:
@@ -568,7 +588,7 @@ while running:
             result_text = CG_font_small.render(round_result, True, cp.spiced_wine)
             screen.blit(result_text, result_text.get_rect(center=(930, 530)))
             restart_text = CG_font_small.render(
-                "Enter to Continue" to continue", True, cp.spiced_wine
+                "Enter to Continue", True, cp.spiced_wine
             )
             screen.blit(restart_text, restart_text.get_rect(center=(930, 580)))
         else:
