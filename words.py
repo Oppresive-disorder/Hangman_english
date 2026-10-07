@@ -7,7 +7,20 @@ nltk.download("wordnet", quiet=True)
 nltk.download("words", quiet=True)
 
 
-english_hord = [w.lower() for w in set(words.words("en")) if w.isalpha()]
+def is_wordnet_lemma(word):
+    normalized_word = word.lower()
+    return any(
+        lemma.name().lower() == normalized_word
+        for synset in wordnet.synsets(normalized_word)
+        for lemma in synset.lemmas()
+    )
+
+
+english_hord = [
+    word.lower()
+    for word in set(words.words("en"))
+    if word.isalpha() and is_wordnet_lemma(word)
+]
 easy_words = [w for w in english_hord if 2 <= len(w) <= 5]
 medium_words = [w for w in english_hord if 6 <= len(w) <= 7]
 hard_words = [w for w in english_hord if 8 <= len(w) <= 12]
