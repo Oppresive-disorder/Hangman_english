@@ -3,8 +3,10 @@ import pygame
 import color_palette as cp
 import tracker
 import Hangman_monolith as HM
-import Game_interface as GI 
+import Game_interface as GI
 from words import get_definition, get_random_word
+
+
 
 
 pygame.init()
@@ -14,6 +16,7 @@ pygame.display.set_caption(" Hang Moni ")
 CG_font = pygame.font.SysFont("Cormorant Garamond", 49)
 CG_font_small = pygame.font.SysFont("Cormorant Garamond", 30)
 
+
 Easy_button = pygame.Rect(135, 600, 200, 50)
 intermediate_button = pygame.Rect(395, 600, 200, 50)
 hard_button = pygame.Rect(655, 600, 200, 50)
@@ -21,6 +24,7 @@ expert_button = pygame.Rect(915, 600, 200, 50)
 welcome_text_string = "Welcome to Hang Moni"
 welcome_font = pygame.font.SysFont("Cormorant Garamond", 80)
 welcome_text = welcome_font.render(welcome_text_string, True, cp.spiced_wine)
+
 
 class AnimatedCat:
     def __init__(self, x, y):
@@ -39,26 +43,33 @@ class AnimatedCat:
         self.frame_index = 0
         self.animation_timer = 0
 
+
     def update(self, delta_time):
         self.animation_timer += delta_time
         while self.animation_timer >= 0.1:
             self.animation_timer -= 0.1
             self.frame_index = (self.frame_index + 1) % len(self.frames)
 
+
     def draw(self, surface):
         surface.blit(self.frames[self.frame_index], self.rect)
 
 
+
+
 cat = AnimatedCat(screen.get_width() // 2, 360)
+
 
 class Home_Button:
     def __init__(self, x, y):
         self.rect = pygame.Rect(x, y, 100, 50)
         self.text = CG_font_small.render("Home", True, cp.ivory)
 
+
     def draw(self, surface):
         pygame.draw.rect(surface, cp.mulberry_mist, self.rect)
         surface.blit(self.text, self.text.get_rect(center=self.rect.center))
+
 
 class platform:
     def __init__(self, x, y, width, height):
@@ -67,37 +78,45 @@ class platform:
         self.sprite = pygame.transform.scale(sprite, (width, height))
         width, height = self.rect.size
 
+
     def draw(self, surface):
         surface.blit(self.sprite, self.rect)
 
 
-        
+
+
+       
 class moni_display:
     def __init__(self, x, y):
         self.rect = pygame.Rect(x, y, 200, 50)
+
 
     def draw(self, surface, value):
         pygame.draw.rect(surface, cp.mulberry_mist, self.rect)
         text = CG_font_small.render(f"Moni: ${value}", True, cp.ivory)
         surface.blit(text, text.get_rect(center=self.rect.center))
 
+
 class streak_display:
     def __init__(self, x, y):
         self.rect = pygame.Rect(x, y, 200, 50)
+
 
     def draw(self, surface, value):
         pygame.draw.rect(surface, cp.blush_suede, self.rect)
         text = CG_font_small.render(f"Streak: {value}", True, cp.ivory)
         surface.blit(text, text.get_rect(center=self.rect.center))
-        
+       
 class highest_streak_display:    
     def __init__(self, x, y):
         self.rect = pygame.Rect(x, y, 200, 50)
+
 
     def draw(self, surface, value):
         pygame.draw.rect(surface, cp.blush_suede, self.rect)
         text = CG_font_small.render(f"Best streak: {value}", True, cp.ivory)
         surface.blit(text, text.get_rect(center=self.rect.center))
+
 
 class Moni_face:
     def __init__(self, x, y):
@@ -111,6 +130,7 @@ class Moni_face:
         self.sprite6 = pygame.image.load(os.path.join(os.path.dirname(__file__), "6 tounge out.png"))
         self.sprite7 = pygame.image.load(os.path.join(os.path.dirname(__file__), "7 anger.png"))
 
+
         self.sprites = (
             self.sprite1,
             self.sprite2,
@@ -120,6 +140,7 @@ class Moni_face:
             self.sprite6,
             self.sprite7,
         )
+
 
     def draw(self, surface, wrong_guesses, max_guesses):
         last_y = surface.get_height() - self.sprites[0].get_height()
@@ -133,6 +154,7 @@ class Moni_face:
         face_rect = surface.blit(face, (self.x, round(y)))
         return face_rect
 
+
 class speech_bubble:
     def __init__(self, x, y, width, height):
         sprite = pygame.image.load(
@@ -144,6 +166,7 @@ class speech_bubble:
         self.sprite = sprite
         self.font = pygame.font.SysFont("Cormorant Garamond", 21)
         self.scaled_sprites = {}
+
 
     def draw(self, surface, text, face_rect):
         max_text_width = self.width - 56
@@ -158,6 +181,7 @@ class speech_bubble:
                 line = candidate
         if line:
             lines.append(line)
+
 
         line_height = self.font.get_linesize()
         bubble_height = max(self.height, len(lines) * line_height + 40)
@@ -174,6 +198,7 @@ class speech_bubble:
         bubble_sprite = self.scaled_sprites[rect.size]
         surface.blit(bubble_sprite, rect)
 
+
         text_y = rect.centery - len(lines) * line_height // 2
         for line in lines:
             text_surface = self.font.render(line, True, cp.black)
@@ -183,12 +208,14 @@ class speech_bubble:
             )
             text_y += line_height
 
+
 buttons = [
     (Easy_button, cp.terracotta_dust, CG_font.render("Easy", True, cp.ivory)),
     (intermediate_button, cp.baked_earth, CG_font_small.render("Intermediate", True, cp.ivory)),
     (hard_button, cp.vintage_rose, CG_font.render("Hard", True, cp.ivory)),
     (expert_button, cp.slate_navy, CG_font.render("Expert", True, cp.ivory)),
 ]
+
 
 moni_box = moni_display(1000, 50)
 streak_box = streak_display(1000, 110)
@@ -200,11 +227,13 @@ moni_speech_bubble = speech_bubble(0, 0, 300, 140)
 current_screen = "menu"
 current_level = None
 
+
 game_word = ""
 game_definition = ""
 guessed_letters = set()
 game_over = False
 round_result = ""
+
 
 clock = pygame.time.Clock()
 running = True
@@ -242,12 +271,20 @@ while running:
             elif current_screen == "game" and home_button.rect.collidepoint(event.pos):
                 current_screen = "menu"
         elif current_screen == "game" and event.type == pygame.KEYDOWN:
-            if not game_over and len(event.unicode) == 1 and event.unicode.isalpha():
+            if game_over and event.key == pygame.K_r:
+                tracker.reset_round()
+                game_word = get_random_word(current_level).lower()
+                game_definition = get_definition(game_word)
+                guessed_letters.clear()
+                game_over = False
+                round_result = ""
+            elif not game_over and len(event.unicode) == 1 and event.unicode.isalpha():
                 letter = event.unicode.lower()
                 if letter not in guessed_letters:
                     guessed_letters.add(letter)
                     if letter not in game_word:
                         tracker.add_wrong_guess()
+
 
                     won = tracker.is_word_complete(game_word, guessed_letters)
                     lost = tracker.is_max_guesses_reached()
@@ -256,12 +293,15 @@ while running:
                         round_result = "You win!" if won else f"You lose! The word was {game_word}."
                         tracker.update_streak(won)
 
+
     if not running:
         break
+
 
     delta_time = clock.tick(60) / 1000
     cat.update(delta_time)
     screen.fill(cp.ivory)
+
 
     if current_screen == "menu":
         for button, color, label in buttons:
@@ -299,11 +339,19 @@ while running:
         if round_result:
             result_text = CG_font_small.render(round_result, True, cp.spiced_wine)
             screen.blit(result_text, result_text.get_rect(center=(930, 530)))
+            restart_text = CG_font_small.render(
+                "Press R to play again", True, cp.spiced_wine
+            )
+            screen.blit(restart_text, restart_text.get_rect(center=(930, 580)))
         else:
             instruction = CG_font_small.render(
                 "Type a letter to guess", True, cp.spiced_wine
             )
             screen.blit(instruction, instruction.get_rect(center=(930, 530)))
 
+
     pygame.display.flip()
 pygame.quit()
+
+
+
