@@ -23,6 +23,10 @@ pixel_display_font = pygame.font.Font(pixel_font_path, 22)
 pixel_display_label_font = pygame.font.Font(pixel_font_path, 14)
 
 
+def draw_background(surface):
+    def __init__(self, x, y):
+        hi = ()
+
 def draw_pixel_text(surface, text, font, color, center, shadow_offset=(4, 4)):
     shadow = font.render(text, False, cp.deep_walnut)
     foreground = font.render(text, False, color)
