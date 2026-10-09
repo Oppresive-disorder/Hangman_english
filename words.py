@@ -1,9 +1,11 @@
+import os
 import random
 import nltk
 import requests
 from nltk.corpus import wordnet, words
 
 
+nltk.data.path.insert(0, os.path.join(os.path.dirname(__file__), "nltk_data"))
 nltk.download("wordnet", quiet=True)
 nltk.download("words", quiet=True)
 
