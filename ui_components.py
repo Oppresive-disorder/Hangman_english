@@ -1,5 +1,6 @@
 import os
 from concurrent.futures import Future, ThreadPoolExecutor
+from typing import Optional
 import pygame
 import color_palette as cp
 import tracker
@@ -400,8 +401,8 @@ game_platform = platform(0, 45, 675, 675)
 moni_face = Moni_face(535, 110)
 moni_speech_bubble = speech_bubble(0, 0, 300, 140)
 definition_executor = ThreadPoolExecutor(max_workers=1)
-word_future: Future[str] | None = None
-definition_future: Future[str] | None = None
+word_future: Optional[Future[str]] = None
+definition_future: Optional[Future[str]] = None
 current_screen = "menu"
 current_level = None
 
