@@ -16,6 +16,8 @@ assets = [
     "speach bubble.png",
     "cat_animation-Sheet.png",
     "platform.png",
+    "back_ground.png",
+    "temple.gif",
 ]
 corpora = [
     ("nltk_data/corpora/words", "nltk_data/corpora/words"),

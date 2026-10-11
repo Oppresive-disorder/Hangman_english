@@ -18,15 +18,25 @@ CG_font = pygame.font.SysFont("Cormorant Garamond", 49)
 CG_font_small = pygame.font.SysFont("Cormorant Garamond", 30)
 pixel_font_path = os.path.join(os.path.dirname(__file__), "PixelifySans.ttf")
 pixel_title_font = pygame.font.Font(pixel_font_path, 64)
+menu_splash_font = pygame.font.Font(pixel_font_path, 30)
 pixel_button_font = pygame.font.Font(pixel_font_path, 27)
 pixel_small_button_font = pygame.font.Font(pixel_font_path, 20)
 pixel_display_font = pygame.font.Font(pixel_font_path, 22)
 pixel_display_label_font = pygame.font.Font(pixel_font_path, 14)
+background_path = os.path.join(os.path.dirname(__file__), "back_ground.png")
+game_background = pygame.transform.scale(
+    pygame.image.load(background_path).convert_alpha(), screen.get_size()
+)
+sacrifice_background_path = os.path.join(
+    os.path.dirname(__file__), "temple.gif"
+)
+sacrifice_background = pygame.transform.scale(
+    pygame.image.load(sacrifice_background_path).convert(), screen.get_size()
+)
 
 
 def draw_background(surface):
-    def __init__(self, x, y):
-        hi = ()
+    surface.blit(game_background, (0, 0))
 
 def draw_pixel_text(surface, text, font, color, center, shadow_offset=(4, 4)):
     shadow = font.render(text, False, cp.deep_walnut)
@@ -195,6 +205,127 @@ class Home_Button:
         )
 
 
+class Sacrifice_Button:
+    def __init__(self, x, y):
+        self.rect = pygame.Rect(x, y, 160, 50)
+
+    def draw(self, surface, mouse_pos, mouse_pressed):
+        hovered = self.rect.collidepoint(mouse_pos)
+        pressed = hovered and mouse_pressed
+        draw_pixel_button(surface, self.rect, cp.mulberry_mist, hovered, pressed)
+        label_center = self.rect.center
+        if pressed:
+            label_center = (self.rect.centerx, self.rect.centery + 4)
+        draw_pixel_text(
+            surface,
+            "Sacrifice",
+            pixel_button_font,
+            cp.ivory,
+            label_center,
+            (1, 2) if pressed else (2, 3),
+        )
+
+
+class Sacrifice_Altar_Button:
+    def __init__(self, x, y):
+        self.rect = pygame.Rect(x - 64, y - 64, 128, 128)
+        self.pulses = []
+
+    def activate(self):
+        self.pulses.append(pygame.time.get_ticks())
+
+    def draw(self, surface, mouse_pos, mouse_pressed, enabled):
+        hovered = enabled and self.rect.collidepoint(mouse_pos)
+        pressed = hovered and mouse_pressed
+        now = pygame.time.get_ticks()
+        self.pulses = [
+            started_at for started_at in self.pulses if now - started_at < 650
+        ]
+        flashing = any(now - started_at < 220 for started_at in self.pulses)
+        center = (self.rect.centerx, self.rect.centery + (3 if pressed else 0))
+        radius = 57 if pressed else 61
+        glow = (
+            (255, 218, 92, 250)
+            if hovered or flashing
+            else (99, 207, 218, 190)
+        )
+        outline = (12, 34, 48, 245)
+        detail = (223, 211, 210, 245)
+
+        design = pygame.Surface(self.rect.size, pygame.SRCALPHA)
+        local_center = (
+            center[0] - self.rect.left,
+            center[1] - self.rect.top,
+        )
+        pygame.draw.circle(design, (12, 34, 48, 220), local_center, radius)
+        pygame.draw.circle(design, glow, local_center, radius - 5, 4)
+        pygame.draw.circle(design, outline, local_center, radius - 12, 3)
+        pygame.draw.circle(design, detail, local_center, radius - 18, 1)
+
+        cx, cy = local_center
+        outer_diamond = [
+            (cx, cy - 37),
+            (cx + 37, cy),
+            (cx, cy + 37),
+            (cx - 37, cy),
+        ]
+        inner_diamond = [
+            (cx, cy - 22),
+            (cx + 22, cy),
+            (cx, cy + 22),
+            (cx - 22, cy),
+        ]
+        pygame.draw.polygon(design, outline, outer_diamond, 3)
+        pygame.draw.polygon(design, detail, inner_diamond, 2)
+        for offset in (-1, 1):
+            pygame.draw.line(
+                design,
+                detail,
+                (cx + offset * 45, cy - 5),
+                (cx + offset * 45, cy + 5),
+                2,
+            )
+            pygame.draw.line(
+                design,
+                detail,
+                (cx - 5, cy + offset * 45),
+                (cx + 5, cy + offset * 45),
+                2,
+            )
+        pygame.draw.circle(design, glow, local_center, 7)
+        pygame.draw.circle(design, detail, local_center, 3)
+        surface.blit(design, self.rect.topleft)
+
+        pulse_surface = pygame.Surface((260, 260), pygame.SRCALPHA)
+        for started_at in self.pulses:
+            progress = (now - started_at) / 650
+            pulse_radius = round(62 + progress * 105)
+            alpha = round(235 * (1 - progress))
+            pygame.draw.circle(
+                pulse_surface,
+                (255, 218, 92, alpha),
+                (130, 130),
+                pulse_radius,
+                4,
+            )
+            for index in range(8):
+                angle = index * math.tau / 8
+                sparkle_radius = 55 + progress * 90
+                sparkle_center = (
+                    round(130 + math.cos(angle) * sparkle_radius),
+                    round(130 + math.sin(angle) * sparkle_radius),
+                )
+                pygame.draw.rect(
+                    pulse_surface,
+                    (255, 239, 173, alpha),
+                    (*sparkle_center, 4, 4),
+                )
+        surface.blit(
+            pulse_surface,
+            (self.rect.centerx - 130, self.rect.centery - 130),
+        )
+
+
 class platform:
     def __init__(self, x, y, width, height):
         sprite = pygame.image.load(os.path.join(os.path.dirname(__file__), "platform.png")).convert_alpha()
@@ -216,7 +347,7 @@ class moni_display:
 
 
     def draw(self, surface, value):
-        draw_pixel_display(surface, self.rect, "Moni", f"${value}", cp.mulberry_mist)
+        draw_pixel_display(surface, self.rect, "Moni", value, cp.mulberry_mist)
 
 
 class streak_display:
@@ -397,6 +528,10 @@ moni_box = moni_display(1000, 50)
 streak_box = streak_display(1000, 110)
 highest_streak_box = highest_streak_display(1000, 170)
 home_button = Home_Button(30, 30)
+sacrifice_button = Sacrifice_Button(30, 30)
+sacrifice_altar_button = Sacrifice_Altar_Button(
+    screen.get_width() // 2, 220
+)
 game_platform = platform(0, 45, 675, 675)
 moni_face = Moni_face(535, 110)
 moni_speech_bubble = speech_bubble(0, 0, 300, 140)
@@ -405,6 +540,7 @@ word_future: Optional[Future[str]] = None
 definition_future: Optional[Future[str]] = None
 current_screen = "menu"
 current_level = None
+sacrificed_moni = 0
 
 
 game_word = ""
@@ -440,7 +576,12 @@ while running:
                 ),
                 None,
             )
-            if level_selection is not None and current_screen == "menu":
+            if (
+                current_screen == "menu"
+                and sacrifice_button.rect.collidepoint(event.pos)
+            ):
+                current_screen = "sacrifice"
+            elif level_selection is not None and current_screen == "menu":
                 _, current_level = level_selection
                 tracker.set_level(current_level)
                 current_screen = "game"
@@ -452,12 +593,24 @@ while running:
                 word_future = definition_executor.submit(
                     get_random_word, current_level
                 )
-            elif current_screen == "game" and home_button.rect.collidepoint(event.pos):
+            elif current_screen in ("game", "sacrifice") and home_button.rect.collidepoint(event.pos):
                 current_screen = "menu"
-        elif current_screen == "game" and event.type == pygame.KEYDOWN:
+            elif (
+                current_screen == "sacrifice"
+                and tracker.moni > 0
+                and sacrifice_altar_button.rect.collidepoint(event.pos)
+            ):
+                tracker.moni -= 1
+                sacrificed_moni += 1
+                sacrifice_altar_button.activate()
+        elif current_screen in ("game", "sacrifice") and event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 current_screen = "menu"
-            elif game_over and event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
+            elif (
+                current_screen == "game"
+                and game_over
+                and event.key in (pygame.K_RETURN, pygame.K_KP_ENTER)
+            ):
                 tracker.reset_round()
                 game_word = ""
                 game_definition = ""
@@ -470,7 +623,8 @@ while running:
                     get_random_word, current_level
                 )
             elif (
-                word_future is None
+                current_screen == "game"
+                and word_future is None
                 and not game_over
                 and len(event.unicode) == 1
                 and event.unicode.isalpha()
@@ -517,13 +671,14 @@ while running:
 
     delta_time = clock.tick(60) / 1000
     cat.update(delta_time)
-    screen.fill(cp.ivory)
 
 
     if current_screen == "menu":
+        screen.fill(cp.ivory)
         moni_box.draw(screen, tracker.moni)
         mouse_pos = pygame.mouse.get_pos()
         mouse_pressed = pygame.mouse.get_pressed()[0]
+        sacrifice_button.draw(screen, mouse_pos, mouse_pressed)
         for button, color, label in buttons:
             hovered = button.collidepoint(mouse_pos)
             pressed = hovered and mouse_pressed
@@ -552,7 +707,48 @@ while running:
             cp.spiced_wine,
             (screen.get_width() // 2, 100),
         )
+        splash_shadow = pygame.transform.rotate(
+            menu_splash_font.render("Win to gain Moni!", False, cp.deep_walnut),
+            -12,
+        )
+        splash_text = pygame.transform.rotate(
+            menu_splash_font.render("Win to gain Moni!", False, cp.muted_amber),
+            -12,
+        )
+        splash_center = (930, 170)
+        screen.blit(
+            splash_shadow,
+            splash_shadow.get_rect(center=(splash_center[0] + 2, splash_center[1] + 2)),
+        )
+        screen.blit(splash_text, splash_text.get_rect(center=splash_center))
+    elif current_screen == "sacrifice":
+        screen.blit(sacrifice_background, (0, 0))
+        home_button.draw(
+            screen, pygame.mouse.get_pos(), pygame.mouse.get_pressed()[0]
+        )
+        sacrifice_altar_button.draw(
+            screen,
+            pygame.mouse.get_pos(),
+            pygame.mouse.get_pressed()[0],
+            tracker.moni > 0,
+        )
+        moni_box.draw(screen, tracker.moni)
+        draw_pixel_text(
+            screen,
+            f"Sacrificed: {sacrificed_moni}",
+            pixel_button_font,
+            cp.steamed_milk,
+            (screen.get_width() // 2, 28),
+        )
+        draw_pixel_text(
+            screen,
+            "Sacrifice",
+            pixel_title_font,
+            cp.steamed_milk,
+            (screen.get_width() // 2, screen.get_height() // 2),
+        )
     else:
+        draw_background(screen)
         home_button.draw(
             screen, pygame.mouse.get_pos(), pygame.mouse.get_pressed()[0]
         )
@@ -575,25 +771,27 @@ while running:
         moni_box.draw(screen, tracker.moni)
         streak_box.draw(screen, tracker.streak)
         highest_streak_box.draw(screen, tracker.highest_streak)
-        shown_word = tracker.get_display_word(game_word, guessed_letters)
-        word_text = CG_font.render(shown_word, True, cp.spiced_wine)
-        screen.blit(word_text, word_text.get_rect(center=(930, 400)))
-        guesses_text = CG_font_small.render(
-            f"Wrong guesses: {tracker.wrong_guesses}/{tracker.max_guesses}",
-            True,
-            cp.spiced_wine,
-        )
-        screen.blit(guesses_text, guesses_text.get_rect(center=(930, 470)))
         if round_result:
-            result_text = CG_font_small.render(round_result, True, cp.spiced_wine)
-            screen.blit(result_text, result_text.get_rect(center=(930, 530)))
-            restart_text = CG_font_small.render(
-                "Enter to Continue", True, cp.spiced_wine
+            result_text = CG_font_small.render(
+                round_result, True, cp.steamed_milk
             )
-            screen.blit(restart_text, restart_text.get_rect(center=(930, 580)))
+            screen.blit(result_text, result_text.get_rect(center=(930, 400)))
+            restart_text = CG_font_small.render(
+                "Enter to Continue", True, cp.steamed_milk
+            )
+            screen.blit(restart_text, restart_text.get_rect(center=(930, 470)))
         else:
+            shown_word = tracker.get_display_word(game_word, guessed_letters)
+            word_text = CG_font.render(shown_word, True, cp.steamed_milk)
+            screen.blit(word_text, word_text.get_rect(center=(930, 400)))
+            guesses_text = CG_font_small.render(
+                f"Wrong guesses: {tracker.wrong_guesses}/{tracker.max_guesses}",
+                True,
+                cp.steamed_milk,
+            )
+            screen.blit(guesses_text, guesses_text.get_rect(center=(930, 470)))
             instruction = CG_font_small.render(
-                "Type a letter to guess", True, cp.spiced_wine
+                "Type a letter to guess", True, cp.steamed_milk
             )
             screen.blit(instruction, instruction.get_rect(center=(930, 530)))
 

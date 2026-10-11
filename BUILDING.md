@@ -7,7 +7,8 @@ not cross-compile. This prototype's Mac build targets Apple silicon (arm64).
 ## Prepare
 
 Use Python 3.9 or newer, open a terminal in the project folder, and install the
-project dependencies:
+project dependencies. `pygame-ce` provides the `pygame` module used by the
+game and has a prebuilt package for the project's Python version:
 
 ```sh
 python -m pip install -r requirements.txt
