@@ -1,5 +1,5 @@
 streak = 0
-moni = 10
+moni = 100
 highest_streak = 0
 
 level1 = False
